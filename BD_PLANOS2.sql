@@ -56,6 +56,7 @@ CREATE TABLE usuario (
   id_colaborador INT UNSIGNED NULL,
   nombre_mostrar VARCHAR(150) NOT NULL,
   correo         VARCHAR(180) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
   id_estado      TINYINT UNSIGNED NOT NULL,
   created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -71,16 +72,7 @@ CREATE TABLE usuario (
   KEY ix_usuario_estado (id_estado)
 ) ENGINE=InnoDB;
 
-CREATE TABLE autenticacion (
-  id_usuario    INT UNSIGNED PRIMARY KEY,
-  password_hash VARCHAR(255) NOT NULL,
-  last_login_at DATETIME NULL,
-  must_reset    TINYINT(1) NOT NULL DEFAULT 0,
-  created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT fk_auth_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-    ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB;
+
 
 -- Roles y permisos
 CREATE TABLE rol (
@@ -258,20 +250,6 @@ CREATE TABLE usuario_notificacion (
     ON DELETE CASCADE ON UPDATE CASCADE,
   KEY ix_un_leido (leido_en),
   KEY ix_un_estado (id_usuario, leido_en)
-) ENGINE=InnoDB;
-
--- Logs y auditoría
-CREATE TABLE logsistema (
-  id_log    BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  id_usuario INT UNSIGNED NULL,
-  accion    VARCHAR(120) NOT NULL,
-  contexto  JSON NULL,
-  fecha     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_log_usuario FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
-    ON DELETE SET NULL ON UPDATE CASCADE,
-  KEY ix_log_fecha (fecha),
-  KEY ix_log_usuario (id_usuario),
-  KEY ix_log_accion (accion)
 ) ENGINE=InnoDB;
 
 CREATE TABLE auditoria_evento (
